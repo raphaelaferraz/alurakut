@@ -30,6 +30,12 @@ const Box = styled.div`
     color: #333333;
     margin-bottom: 20px;
   }
+  .linkTitle {
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    color: #ffffff;
+  }
   hr {
     margin-top: 12px;
     margin-bottom: 8px;
@@ -54,8 +60,13 @@ const Box = styled.div`
     padding: 8px 12px;
     color: #FFFFFF;
     border-radius: 10000px;
-    background-color: #6F92BB;
+    background-color: #fa8072;
   }
+  @media (max-width: 860px){
+      .image {
+        width: 85%;}
+  }
+
 `; 
 
 export default Box;

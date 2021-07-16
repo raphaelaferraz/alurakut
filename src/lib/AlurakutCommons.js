@@ -59,12 +59,17 @@ AlurakutMenu.Wrapper = styled.header`
     background: white;
     position: fixed;
     z-index: 100;
-    padding: 46px;
+    padding: 55px;
     bottom: 0;
     left: 0;
     right: 0;
-    top: 48px;
+    top: 0px;
     transition: .3s;
+    img {
+      width: 50%;
+      
+    }
+
     pointer-events: ${({ isMenuOpen }) => isMenuOpen ? 'all' : 'none'};
     opacity: ${({ isMenuOpen }) => isMenuOpen ? '1' : '0'};
     transform: ${({ isMenuOpen }) => isMenuOpen ? 'translateY(0)' : 'translateY(calc(-100% - 48px))'};
@@ -80,7 +85,7 @@ AlurakutMenu.Wrapper = styled.header`
     }
     .boxLink {
       font-size: 18px;
-      color: #2E7BB4;
+      color: #308bc5;
       -webkit-text-decoration: none;
       text-decoration: none;
       font-weight: 800;
@@ -93,7 +98,7 @@ AlurakutMenu.Wrapper = styled.header`
     }
   }
   .container {
-    background-color: #308BC5;
+    background-color: #FA8072	;
     padding: 7px 16px;
     max-width: 1110px;
     margin: auto;
@@ -126,7 +131,7 @@ AlurakutMenu.Wrapper = styled.header`
         text-decoration: none;
         &:after {
           content: " ";
-          background-color: #5292C1;
+          background-color: #FFDAB9	;
           display: block;
           position: absolute;
           width: 1px;
@@ -139,8 +144,8 @@ AlurakutMenu.Wrapper = styled.header`
       }
     }
     input {
-      color: #ffffff;
-      background: #5579A1;
+      color: #fa8072;
+      background: #ffdab9	;
       padding: 10px 42px;
       border: 0;
       background-image: url(${`${BASE_URL}/icons/search.svg`});
@@ -149,7 +154,7 @@ AlurakutMenu.Wrapper = styled.header`
       border-radius: 1000px;
       font-size: 12px;
       ::placeholder {
-        color: #ffffff;
+        color: #fa8072;
         opacity: 1;
       }
     } 
@@ -166,7 +171,7 @@ function AlurakutMenuProfileSidebar({ usuarioAleatorio }) {
   return (
     <div className="alurakutMenuProfileSidebar">
       <div>
-        <img src={`https://github.com/${usuarioAleatorio}.png`} style={{ borderRadius: '8px' }} />
+        <img className='image' src={`https://github.com/${usuarioAleatorio}.png`} style={{ borderRadius: '8px' }} />
         <hr />
         <p>
           <a className="boxLink" href={`/user/${usuarioAleatorio}`}>
