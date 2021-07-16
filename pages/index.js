@@ -26,9 +26,14 @@ function ProfileSidebar(propriedades) {
   )
 }
 
+
 export default function Home() {
   const usuarioAleatorio = 'raphaelaferraz'
-  const [comunidades, setComunidades] = React.useState(['Alurakut']);
+  const [comunidades, setComunidades] = React.useState([{
+    id: '15154112106645448878784',
+    title: 'Eu odeio acordar cedo',
+    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
+  }]);
   console.log(comunidades);
   //const comunidades = ['Alurakut']
   const pessoasFavoritas = [
@@ -40,7 +45,8 @@ export default function Home() {
   
   return ( 
     <>
-    <AlurakutMenu />
+    <AlurakutMenu usuarioAleatorio={usuarioAleatorio}/> 
+      
     <MainGrid> 
       <div className="profileArea" style = {{ gridArea: 'profileArea' }}> 
        <ProfileSidebar usuarioAleatorio={usuarioAleatorio} />
@@ -61,9 +67,21 @@ export default function Home() {
           <form onSubmit={function handleCriarcomunidade(e) {
               e.preventDefault();
               
+              const dadosDoFormulario = new FormData(e.target);
+              console.log('Campo: ', dadosDoFormulario.get('title'));
+              console.log('Campo: ', dadosDoFormulario.get('image'));
 
-              setComunidades(comunidades => [...comunidades, 'Alura Stars'])
-              console.log(comunidades);
+              const comunidade = {
+                id: new Date().toISOString(),
+                title: dadosDoFormulario.get('title'),
+                image: dadosDoFormulario.get('image'),
+              }
+              
+              const comunidadesAtualizadas = [...comunidades, comunidade]
+
+              setComunidades(comunidadesAtualizadas)
+            
+              
           }}>
             <div> 
               <input placeholder="Qual vai ser o nome da comunidade?" name="title" 
@@ -71,13 +89,19 @@ export default function Home() {
               type="text"
               />
             </div>
+
+            <div> 
+              <input placeholder="Coloque aqui a URL da capa de sua comunidade" name="image" 
+              aria-label="Coloque aqui a URL da capa de sua comunidade" 
+              /> 
+            </div>
+            <button type='submit'>
+              Criar comunidade
+            </button>
           </form>
-          <div> 
-            <input placeholder="Coloque aqui a URL da capa de sua comunidade" name="image" 
-            aria-label="Coloque aqui a URL da capa de sua comunidade" 
-            /> 
-          </div>
-          <button> Criar comunidade </button>
+          
+          
+          
         </Box>
 
       </div>
@@ -85,13 +109,15 @@ export default function Home() {
         
       <div className="profileRelationsArea" style = {{ gridArea: 'profileRelationsArea' }}>
       <ProfileRelationsBoxWrapper>
+      <h2 className="smallTitle">
+              Minha comunidade ({ comunidades.length }) </h2>
           <ul>
               {comunidades.map((itemAtual) => {
                 return (
-                  <li>
-                    <a href={`/users/${itemAtual}`} key={itemAtual}>
-                     <img src={`http://placehold.it/300x300`} /> 
-                      <span>{itemAtual}</span>
+                  <li key={itemAtual.id} >
+                    <a href={`/users/${itemAtual.title}`}>
+                     <img src={itemAtual.image} /> 
+                      <span>{itemAtual.title}</span>
                     </a>
                   </li>
                 )
@@ -103,14 +129,14 @@ export default function Home() {
         
         <ProfileRelationsBoxWrapper>
           <h2 className="smallTitle"> 
-            Pessoas da comunidade({pessoasFavoritas.length}) 
+            Pessoas favoritas ({pessoasFavoritas.length}) 
           </h2>
           
 
           <ul>
               {pessoasFavoritas.map((itemAtual) => {
                 return (
-                  <li>
+                  <li key={itemAtual}>
                     <a href={`/users/${itemAtual}`} key={itemAtual}>
                       <img src={`https://github.com/${itemAtual}.png`} />
                       <span>{itemAtual}</span>
