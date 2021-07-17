@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import styled from "styled-components"
 import MainGrid from '../src/componentes/MainGrid'
 import Box from '../src/componentes/Box'
 import  { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet }  from '../src/lib/AlurakutCommons';
@@ -31,27 +32,74 @@ function ProfileRelationsBox(propriedades){
   return (
     <ProfileRelationsBoxWrapper>
       <h2 className="smallTitle">
-           {propriedades.title}   ({ propriedades.items.length }) </h2>
-          <ul>
-              { /* seguidores.map((itemAtual) => {
-                return (
-                  <li key={itemAtual} >
-                    <a href={`https://github.com/${itemAtual}.png`}>
-                     <img src={itemAtual.image} /> 
-                      <span>{itemAtual.title}</span>
-                    </a>
-                  </li>
-                )
-              })} */}
-            </ul>
-          </ProfileRelationsBoxWrapper> 
-  )}
+       {propriedades.title}   ({ propriedades.items.length }) 
+      </h2>
+      <ul> 
+        {propriedades.items.map((itemAtual) => { 
+          return (
+            <li key={itemAtual.login}>
+              <a href={`${itemAtual.html_url}`}>
+                <img src={`${itemAtual.html_url}.png`} />
+                <span>{itemAtual.login}</span>
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </ProfileRelationsBoxWrapper> 
+  )
+}
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 14px;
+`;
+
+const ScrapBox = styled(Box)`
+box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+span {
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+  border-bottom: 1px solid #f4f4f4;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: #5a5a5a;
+  font-size: 0.8rem;
+  h1 {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #000;
+  }
+}
+p {
+  max-width: 550px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+`;
+
+
+
+
+
+
+
+
 export default function Home() {
+  const [isShowingMoreComunidades, setIsShowingMoreComunidades] = useState(false);
   const usuarioAleatorio = 'raphaelaferraz'
   const [comunidades, setComunidades] = React.useState([]);
-
   console.log(comunidades);
   //const comunidades = ['Alurakut']
+  const [scraps, setScraps] = React.useState([]);
+  const [selecionarOpcao, setSelecionarOpcao] = useState(true);
+
+  
+
   const pessoasFavoritas = [
     'VictorGM01',
     'juunegreiros',
@@ -60,9 +108,8 @@ export default function Home() {
     'filipedeschamps'
   ]
   
-const [seguidores, setSeguidores] = React.useState([]);
-  
-React.useEffect(function() {
+  const [seguidores, setSeguidores] = React.useState([]);
+  React.useEffect(function() {
   fetch('https://api.github.com/users/raphaelaferraz/followers')
   .then(function (respostaDoServidor) {
     return respostaDoServidor.json();
@@ -72,32 +119,43 @@ React.useEffect(function() {
   })
  
 
-  //API GraphQL
-    fetch('https://graphql.datocms.com/', {
-      method: 'POST',
-      headers: {
-        'Authorization': '5f9f6416d2cdbe390876028c213d28',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({"query": `query {
-        allCommunities {
-          title
-          imageUrl
-          communityUrl
-        }
-      }`  })
-    })
+  
+  fetch('https://graphql.datocms.com/', {
+    method: 'POST',
+    headers: {
+      'Authorization': '5f9f6416d2cdbe390876028c213d28',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({"query": `query {
+      allCommunities {
+        title
+        imageUrl
+        communityUrl
+      }
+      allScraps {
+        userSlug
+        description
+      }
+    }`  })
+  })
     .then((response) => response.json())
     .then ((respostaCompleta) => {
       const comunidadesDoDato=respostaCompleta.data.allCommunities;
       console.log(comunidadesDoDato)
+      const scrapsDoDato=respostaCompleta.data.allScraps
+      setScraps(scrapsDoDato)
       setComunidades(comunidadesDoDato)
     })
 }, [])
 
-const [seguindo, setSeguindo] = React.useState([]);
+function handleShowMoreComunidades(e) {
+  e.preventDefault();
+  setIsShowingMoreComunidades(!isShowingMoreComunidades);
+}
 
+
+const [seguindo, setSeguindo] = React.useState([]);
 React.useEffect(function() {
   fetch('https://api.github.com/users/raphaelaferraz/following')
   .then(function (respostaDoServidor) {
@@ -124,94 +182,176 @@ React.useEffect(function() {
             Bem vindo (a)
           </h1>
 
-          <OrkutNostalgicIconSet />
+          <OrkutNostalgicIconSet
+            recados={scraps.length} /> 
         </Box>
 
         <Box> 
           <h2 className="subTitle"> O que você deseja fazer?</h2>
-          <form onSubmit={function handleCriarcomunidade(e) {
-              e.preventDefault();
-              
-              const dadosDoFormulario = new FormData(e.target);
-              console.log('Campo: ', dadosDoFormulario.get('title'));
-              console.log('Campo: ', dadosDoFormulario.get('image'));
-              console.log('Campo: ', dadosDoFormulario.get('link'));
-
-              const comunidade = {
-                title: dadosDoFormulario.get('title'),
-                imageUrl: dadosDoFormulario.get('image'),
-                communityUrl: dadosDoFormulario.get('link')
-              }
-              
-              fetch('/api/comunidades', {
-                method: 'POST',
-                headers: {
-                  'Content-Type':'application/json',
-                },
-                body: JSON.stringify(comunidade)
-              })
-              .then(async(response) => {
-                const dados = await response.json();
-                console.log(dados.registroCriado);
-                const comunidade = dados.registroCriado;
-                const comunidadesAtualizadas = [...comunidades, comunidade];
-                setComunidades(comunidadesAtualizadas)
-              })
-          }}>
-            <div> 
-              <input placeholder="Qual vai ser o nome da comunidade?" name="title" 
-              aria-label="Qual vai ser o nome da comunidade?" 
-              type="text"
-              />
-            </div>
-
-            <div> 
-              <input placeholder="Coloque aqui a URL da capa de sua comunidade" name="image" 
-              aria-label="Coloque aqui a URL da capa de sua comunidade" 
-              /> 
-            </div>
-
-            <div>
-              <input
-              placeholder="Coloque aqui, o link da sua comunidade"
-              name="link"
-              aria-label="Coloque aqui, o link da sua comunidade"
-              />
-            </div>
-            <button type='submit'>
+          <ButtonContainer>
+            <button 
+              onClick={() => setSelecionarOpcao(true)}>
               Criar comunidade
             </button>
-          </form>
-          
-          
-          
+            <button
+              onClick={() => setSelecionarOpcao(false)}>
+              Deixe um recado
+            </button>
+          </ButtonContainer>
+
+          {selecionarOpcao ? ( 
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                 
+                const dadosDoFormulario = new FormData(e.target);
+                console.log('Campo: ', dadosDoFormulario.get('title'));
+                console.log('Campo: ', dadosDoFormulario.get('image'));
+                console.log('Campo: ', dadosDoFormulario.get('link'));
+                 
+
+                const comunidade = {
+                  title: dadosDoFormulario.get('title'),
+                  imageUrl: dadosDoFormulario.get('image'),
+                  communityUrl: dadosDoFormulario.get('link')
+                };
+                 
+                fetch('/api/comunidades', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type':'application/json',
+                  },
+                   body: JSON.stringify(comunidade)
+                })
+                .then(async(response) => {
+                  const dados = await response.json();
+                  console.log(dados.registroCriado);
+                  const comunidade = dados.registroCriado;
+                  const comunidadesAtualizadas = [...comunidades, comunidade];
+                  setComunidades(comunidadesAtualizadas)
+                });
+              }}
+            >
+  
+              
+              
+              <div> 
+                <input placeholder="Qual vai ser o nome da comunidade?" name="title" 
+                aria-label="Qual vai ser o nome da comunidade?" 
+                type="text"
+                />
+              </div>
+
+              <div> 
+                <input placeholder="Coloque aqui a URL da capa de sua comunidade" name="image" 
+                aria-label="Coloque aqui a URL da capa de sua comunidade" 
+                /> 
+              </div>
+
+              <div>
+                <input
+                  placeholder="Coloque aqui, o link da sua comunidade"
+                  name="link"
+                  aria-label="Coloque aqui, o link da sua comunidade"
+                />
+              </div>
+
+              <button type='submit'>
+                Criar comunidade
+              </button>
+            </form>
+          ) : (
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+
+                const dadosDeRecados = new FormData(e.target);  
+                console.log('Campo: ', dadosDeRecados.get('title'));
+                console.log('Campo: ', dadosDeRecados.get('title'));
+                
+                const scrap = {
+                  userSlug: dadosDeRecados.get('title') ? dadosDeRecados.get('title') : "Anônimo",
+                  description: dadosDeRecados.get('title'),
+                };
+                fetch('api/comunidades', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringfy(scrap),
+                })
+                .then(async(response) => {
+                  const data = await response.json();
+                  const scrapsAtualizados = [data.registerSuceeded, ...scraps];
+                  setScraps(scrapsAtualizados);
+                });
+              }}
+            >
+              <div>
+                <input 
+                  placeholder="Qual seu nome?"
+                  name="scrapSenderName"
+                  aria-label="Qual seu nome?"
+                  type="text"
+                />
+              </div> 
+              <div>
+                <input 
+                  placeholder="Deixe seu recado"
+                  name="scrapDescription"
+                  aria-label="Deixe seu recado"
+                  type="text"
+                />
+              </div>
+              <button> Deixar recado</button>
+          </form> 
+          )}
         </Box>
-
+        <Box>
+          <h2 className="subTitle">Recados</h2>
+          {scraps.map((scrap) => {
+            return (
+              <ScrapBox key={scrap.id}>
+                <span>
+                  <h1>{scrap.userSlug}</h1>
+                </span>
+                <p>{scrap.description}</p>
+              </ScrapBox>
+            );
+          })}
+        </Box>
       </div>
-        
-        
-      <div className="profileRelationsArea" style = {{ gridArea: 'profileRelationsArea' }}>
-      <ProfileRelationsBox title="Seguidores" items={seguidores}/>
+        <div className="profileRelationsArea" style= {{ gridArea: 'profileRelationsArea'}}>
+        <ProfileRelationsBox title="Seguidores" items={seguidores} />
 
-      <ProfileRelationsBox title='Seguindo' items={seguindo} />
+        <ProfileRelationsBox title='Seguindo' items={seguindo}/>
       
       
-      <ProfileRelationsBoxWrapper>
-      <h2 className="smallTitle">
-              Minhas comunidades ({ comunidades.length }) </h2>
+        <ProfileRelationsBoxWrapper isShowingMoreItems={isShowingMoreComunidades}>
+          <h2 className="smallTitle">
+            Minhas comunidades ({ comunidades.length }) 
+          </h2>
           <ul>
-              {comunidades.map((itemAtual) => {
-                return (
-                  <li key={itemAtual.id} >
-                    <a href={`/comunidade/${itemAtual.id}`}>
-                     <img src={itemAtual.imageUrl} /> 
-                      <span>{itemAtual.title}</span>
-                    </a>
-                  </li>
-                )
-              })}
-            </ul>
-          </ProfileRelationsBoxWrapper>
+            {comunidades.map((itemAtual) => {
+              return (
+                <li key={itemAtual.id} >
+                  <a href={`/comunidades/${itemAtual.communityUrl}`}>
+                    <img src={itemAtual.imageUrl} /> 
+                    <span>{itemAtual.title}</span>
+                  </a>
+                </li>
+              )
+            })}
+          </ul>
+          {comunidades.length > 6 && (
+          <div className="showMoreComunidades">
+            <hr />
+            <button className="toggleButton" onClick={(e) => handleShowMoreComunidades(e)}>
+              {isShowingMoreComunidades ? 'Ver menos' : 'Ver todos'}
+            </button>
+          </div>
+        )}
+        </ProfileRelationsBoxWrapper>
         
         
         
@@ -222,21 +362,20 @@ React.useEffect(function() {
           
 
           <ul>
-              {pessoasFavoritas.map((itemAtual) => {
-                return (
-                  <li key={itemAtual}>
-                    <a href={`/users/${itemAtual}`} key={itemAtual}>
-                      <img src={`https://github.com/${itemAtual}.png`} />
-                      <span>{itemAtual}</span>
-                    </a>
-                  </li>
-                )
-              })}
-            </ul>
-          </ProfileRelationsBoxWrapper>
-        </div>
-      </MainGrid>
+            {pessoasFavoritas.map((itemAtual) => {
+              return (
+                 <li key={itemAtual}>
+                  <a href={`/users/${itemAtual}`} key={itemAtual}>
+                    <img src={`https://github.com/${itemAtual}.png`} />
+                    <span>{itemAtual}</span>
+                  </a>
+                </li>
+              )
+            })}
+          </ul>
+        </ProfileRelationsBoxWrapper>
+      
+      </div>
+    </MainGrid>
     </>
-  )
-}
-
+  )}

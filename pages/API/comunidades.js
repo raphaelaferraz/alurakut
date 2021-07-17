@@ -16,7 +16,7 @@ export default async function recebedorDeRequests(request, response) {
         console.log(registroCriado);
 
         response.json({
-            dados:'algum',
+            dados:'algum dado qualquer',
             registroCriado: registroCriado,
         })
 
