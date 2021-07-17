@@ -273,7 +273,7 @@ React.useEffect(function() {
                   userSlug: dadosDeRecados.get('title') ? dadosDeRecados.get('title') : "Anônimo",
                   description: dadosDeRecados.get('title'),
                 };
-                fetch('api/comunidades', {
+                fetch('/api/comunidades', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
