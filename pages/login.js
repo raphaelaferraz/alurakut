@@ -5,7 +5,7 @@ import nookies from 'nookies';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [githubUser, setGithubUser] = React.useState('raphaelaferraz');
+  const [githubUser, setGithubUser] = React.useState('');
     const [userExiste, setUserExiste] = React.useState(true);
   
     return (
@@ -38,9 +38,9 @@ export default function LoginScreen() {
                         path: '/',
                         maxAge: 86400 * 7 
                     })
+                    setUserExiste(false)
                     router.push('/')
 
-                    setUserExiste(false)
                 })
             }}>
             <p>
@@ -60,7 +60,7 @@ export default function LoginScreen() {
                 </span>
             )}
             
-
+            
             <button
              type="submit">
               Login

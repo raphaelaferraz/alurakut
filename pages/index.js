@@ -112,14 +112,14 @@ export default function Home(props) {
   
   const [seguidores, setSeguidores] = React.useState([]);
   React.useEffect(function() {
-  fetch('https://api.github.com/users/raphaelaferraz/followers')
-  .then(function (respostaDoServidor) {
-    return respostaDoServidor.json();
-  })
-  .then(function (respostaCompleta){
-    setSeguidores(respostaCompleta);
-  })
- 
+    fetch('https://api.github.com/users/raphaelaferraz/followers')
+    .then(function (respostaDoServidor) {
+      return respostaDoServidor.json();
+    })
+    .then(function (respostaCompleta){
+      setSeguidores(respostaCompleta);
+    })
+  }, []);
 
   
   fetch('https://graphql.datocms.com/', {
@@ -149,7 +149,7 @@ export default function Home(props) {
       setScraps(scrapsDoDato)
       setComunidades(comunidadesDoDato)
     })
-  }, [])
+  
 
   function handleShowMoreComunidades(e) {
     e.preventDefault();
@@ -166,7 +166,7 @@ export default function Home(props) {
     .then(function (respostaCompleta){
       setSeguindo(respostaCompleta);
     })
-  }, [])
+  }, []);
 
   return ( 
     <>
@@ -389,7 +389,7 @@ export async function getServerSideProps(context) {
   const token = cookies.USER_TOKEN;
 
 
-  const { isAuthenticated } = await fetch('alurakut-base-sepia.vercel.app/api/auth', {
+  const { isAuthenticated } = await fetch('http://localhost:3000/api/auth', {
     headers: {
       Authorization: token
     }
