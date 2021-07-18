@@ -322,13 +322,15 @@ export function AlurakutProfileSidebarMenuDefault() {
   const AlurakutLoginScreen = css`
     :root {
       --backgroundPrimary: #D9E6F6;
-      --backgroundSecondary: #F1F9FE;
-      --backgroundTertiary: #FFFFFF;
-      --backgroundQuarternary: #BBCDE8;
-      --colorPrimary: #2E7BB4;
-      --colorSecondary: #388BB0;
-      --colorTertiary: #2F4A71;
+      --backgroundSecondary: #fcd4da;
+      --backgroundTertiary: #fcd4da;
+      --backgroundQuarternary: #fcd4da;
+      --backgroundQuinaria: #fcd4da;
+      --colorPrimary: #fa8072;
+      --colorSecondary: #fa8072;
+      --colorTertiary: #FFFFFF;
       --colorQuarternary: #D81D99;
+      --colorQuinaria: #fcd4da;
       --textPrimaryColor: #333333;
       --textSecondaryColor: #FFFFFF;
       --textTertiaryColor: #5A5A5A;
@@ -421,7 +423,7 @@ export function AlurakutProfileSidebarMenuDefault() {
             display: block;
             border: 1px solid var(--textQuarternaryColor);
             padding: 12px;
-            background-color: var(--backgroundTertiary);
+            background-color: #FFFFFF;
             border-radius: var(--commonRadius);
             margin-top: 24px;
             margin-bottom: 16px;

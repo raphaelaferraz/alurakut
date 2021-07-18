@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import nookies from 'nookies';
+import jwt from 'jsonwebtoken'
 import styled from "styled-components"
 import MainGrid from '../src/componentes/MainGrid'
 import Box from '../src/componentes/Box'
@@ -89,9 +91,9 @@ p {
 
 
 
-export default function Home() {
+export default function Home(props) {
   const [isShowingMoreComunidades, setIsShowingMoreComunidades] = useState(false);
-  const usuarioAleatorio = 'raphaelaferraz'
+  const usuarioAleatorio = props.githubUser;
   const [comunidades, setComunidades] = React.useState([]);
   console.log(comunidades);
   //const comunidades = ['Alurakut']
@@ -147,24 +149,24 @@ export default function Home() {
       setScraps(scrapsDoDato)
       setComunidades(comunidadesDoDato)
     })
-}, [])
+  }, [])
 
-function handleShowMoreComunidades(e) {
-  e.preventDefault();
-  setIsShowingMoreComunidades(!isShowingMoreComunidades);
-}
+  function handleShowMoreComunidades(e) {
+    e.preventDefault();
+    setIsShowingMoreComunidades(!isShowingMoreComunidades);
+  }
 
 
-const [seguindo, setSeguindo] = React.useState([]);
-React.useEffect(function() {
-  fetch('https://api.github.com/users/raphaelaferraz/following')
-  .then(function (respostaDoServidor) {
-    return respostaDoServidor.json();
-  })
-  .then(function (respostaCompleta){
-    setSeguindo(respostaCompleta);
-  })
-}, [])
+  const [seguindo, setSeguindo] = React.useState([]);
+  React.useEffect(function() {
+    fetch('https://api.github.com/users/raphaelaferraz/following')
+    .then(function (respostaDoServidor) {
+      return respostaDoServidor.json();
+    })
+    .then(function (respostaCompleta){
+      setSeguindo(respostaCompleta);
+    })
+  }, [])
 
   return ( 
     <>
@@ -378,4 +380,38 @@ React.useEffect(function() {
       </div>
     </MainGrid>
     </>
-  )}
+  )
+}
+
+
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context)
+  const token = cookies.USER_TOKEN;
+
+
+  const { isAuthenticated } = await fetch('http://localhost:3000/api/auth', {
+    headers: {
+      Authorization: token
+    }
+  })
+  .then((resposta) => resposta.json())
+
+  console.log('isAuthenticated', isAuthenticated);
+
+  if(!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      }
+    }
+  }
+
+  const { githubUser } = jwt.decode(token);
+
+  return{
+    props: {
+      githubUser
+    },
+  } 
+}
