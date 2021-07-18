@@ -389,7 +389,7 @@ export async function getServerSideProps(context) {
   const token = cookies.USER_TOKEN;
 
 
-  const { isAuthenticated } = await fetch('/api/auth', {
+  const { isAuthenticated } = await fetch('https://alurakut-base-sepia.vercel.app/api/auth', {
     headers: {
       Authorization: token
     }
